@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javatong.mapper.GribMapper">
+<select id="bringAreano" resultType="com.javatong.fcsttong.domain.LocalDTO" >
+		select A_X, A_Y from AREA where A_FST_STAGE = #{A_FST_STAGE} and A_SCND_STAGE = #{A_SCND_STAGE} and A_THIRD_STAGE = #{A_THIRD_STAGE}
+	</select>
+	</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javatong.mapper.MemberMapper">
+	<select id="login" resultType="com.javatong.fcsttong.domain.MemberVO">
+		select U_ID, U_EMAIL, U_PWD,
+		U_NAME, U_PHONENUM, U_PERMISSION, U_BIRTH from USERS where
+		U_EMAIL = #{U_EMAIL} and U_PWD = #{U_PWD}
+	</select>
+
+	<select id="usercount" resultType="int">
+		select count(U_EMAIL) from
+		USERS
+	</select>
+
+	<select id="dupliccheck" resultType="string">
+		select U_EMAIL from USERS
+		where U_EMAIL = #{U_EMAIL}
+	</select>
+
+	<insert id="join">
+		<selectKey keyProperty="U_ID" resultType="int" order="BEFORE">
+			select USERID_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		insert into
+		USERS(U_ID,U_EMAIL,U_PWD,U_NAME,U_GENDER,U_BIRTH,U_PHONENUM,U_PERMISSION)
+		values(#{U_ID},#{U_EMAIL},#{U_PWD},#{U_NAME},#{U_GENDER},#{U_BIRTH},#{U_PHONENUM},#{U_PERMISSION})
+	</insert>
+	
+	<insert id="addAttach">
+		insert into USER_ATTACH(U_PICTURE,U_ID) VALUES(#{U_PICTURE},LAST_INSERT_ID())
+	</insert>
+
+</mapper>

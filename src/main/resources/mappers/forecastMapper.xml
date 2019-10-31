@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.javatong.fcsttong.mapper.forecastMapper">
+	<insert id="add" parameterType="com.javatong.fcsttong.domain.ForecastDTO">
+		insert into middleforecast
+		(m_f_id, m_f_time,
+		m_f_forecast, a_areano)
+		values(#{m_f_id},
+		#{m_f_time}, #{m_f_forecast},
+		#{a_areano})
+	</insert>
+	<select id="read" resultType="com.javatong.fcsttong.domain.ForecastDTO">
+		select m_f_id, m_f_time,
+		m_f_forecast, a_areano from middleforecast
+		where m_f_id = #{m_f_id}
+	</select>
+</mapper>

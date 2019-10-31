@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javatong.mapper.localfcstMapper">
+	<select id="showarealist" resultType="com.javatong.fcsttong.domain.LocalDTO">
+		select a.A_FST_STAGE,
+		a.A_SCND_STAGE, a.A_THIRD_STAGE from AREA a, Place p where a.A_AREANO
+		= p.A_AREANO and U_ID = #{U_ID}
+	</select>
+
+	<select id="bring123" resultType="com.javatong.fcsttong.domain.LocalDTO">
+		select A_AREANO from AREA where
+		A_FST_STAGE = #{A_FST_STAGE} and A_SCND_STAGE = #{A_SCND_STAGE} and
+		A_THIRD_STAGE = #{A_THIRD_STAGE}
+	</select>
+
+	<select id="bringAreano" resultType="com.javatong.fcsttong.domain.LocalDTO">
+		select A_X, A_Y from AREA
+		where A_FST_STAGE = #{A_FST_STAGE} and A_SCND_STAGE = #{A_SCND_STAGE}
+		and A_THIRD_STAGE = #{A_THIRD_STAGE}
+	</select>
+
+	<select id="bringMiddleCode" resultType="com.javatong.fcsttong.domain.LocalDTO">
+		select A_FORECODE, A_TEMPCODE from
+		AREA where A_FST_STAGE = #{A_FST_STAGE} and A_SCND_STAGE =
+		#{A_SCND_STAGE} and A_THIRD_STAGE = #{A_THIRD_STAGE}
+	</select>
+
+	<select id="selsecondstage" resultType="com.javatong.fcsttong.domain.LocalDTO">
+		select distinct
+		A_FST_STAGE, A_SCND_STAGE from AREA where A_FST_STAGE = #{A_FST_STAGE}
+	</select>
+
+	<select id="selthirdstage" resultType="com.javatong.fcsttong.domain.LocalDTO">
+		select distinct
+		A_FST_STAGE, A_SCND_STAGE, A_THIRD_STAGE from AREA where A_FST_STAGE =
+		#{A_FST_STAGE} and A_SCND_STAGE = #{A_SCND_STAGE}
+	</select>
+
+	<insert id="addinterestarea">
+		insert into PLACE (A_AREANO,U_ID)
+		values(#{A_AREANO},#{U_ID})
+	</insert>
+</mapper>

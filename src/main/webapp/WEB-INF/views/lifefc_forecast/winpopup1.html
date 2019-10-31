@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="./js/jquery-1.12.4.min.js">
+</script>
+<script type="text/javascript">
+ alert("winpopup.html  11: ");
+ alert("winpopup.html : "+opener.regForm.calljsp.value );
+ $(function(){alert("winpopup.html 22 ");
+ alert("winpopup.html : "+opener.regForm.post1.value );
+ });
+function setPost(strPost1,post2,baseAddr) {
+	/*  opener : 현재 창을 호출한 창 주인임.
+	    regForm : 호출한 창의 form 태그name임. <form name="regForm" >
+	    post1  post2 : 호출한 창의 form 태그안의 input 태그 name 임.
+	    value : 호출한 창의 form 태그안의 input 태그 의 value 속성값 임.
+	*/
+	alert("setPost() : " +baseAddr);
+	opener.regForm.post1.value = strPost1;
+	opener.regForm.post2.value = post2;
+	opener.regForm.baseAddr.value = baseAddr;
+}
+</script>
+</head>
+<body>
+<h2>우편번호 검색</h2>
+123-456 서울시 광화문로 1111 test
+<button onclick="setPost('123','456','서울시 광화문로 1111'); ">사용하기</button>
+</body>
+</html>

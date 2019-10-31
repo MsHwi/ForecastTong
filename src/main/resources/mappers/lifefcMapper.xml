@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javatong.mapper.LifeFCMapper">
+	<select id="selectFavJijumInfo" resultType="com.javatong.fcsttong.domain.LifeFCDTO">
+		SELECT B.A_AREANO area_no, TRIM(C.A_FST_STAGE || ' ' || replace(C.A_SCND_STAGE, 'null','') || ' ' || replace(C.A_THIRD_STAGE, 'null','')) AREA_NM 
+		FROM USERS A, PLACE B, AREA C 
+		WHERE A.U_EMAIL= #{U_EMAIL} 
+		AND A.U_ID = B.U_ID 
+		AND B.A_AREANO = C.A_AREANO
+	</select>
+
+	<select id="selectlOneLocalJisuInfo" resultType="com.javatong.fcsttong.domain.LifeFCDTO">
+		SELECT 	 TRIM(C.A_FST_STAGE || ' ' || replace(C.A_SCND_STAGE, 'null','') || ' ' || replace(C.A_THIRD_STAGE, 'null',''))  area_nm,
+     			 A.LJ_NOTI_TIME  noti_time,
+     			 DECODE(A.LJ_CODE, 'A07', '자외선' , 'A01_2', '식중독' , 'NoFormattedData')  jisu_nm,
+      			 A.LJ_TODAY today_fcst, PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY) today_fcstStage,
+      			 A.LJ_TOMORROW tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TOMORROW) tomrw_fcstStage,
+      			 A.LJ_TODAY_AFT_TOMRW aft_tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY_AFT_TOMRW)  aft_tomrw_fcstStage
+		FROM LIFEJISUINFO A,  AREA C 
+		WHERE A.A_AREANO = #{areano} 
+		AND A.LJ_NOTI_TIME =  func_sel_last_notitime('LIFE','LIFE1') 
+		AND A.A_AREANO = C.A_AREANO
+		ORDER BY 1, 2
+	</select>
+	
+ <!-- 	<select id="selectJisuinfo" parameterType="java.util.Map" resultType="min.board.model.BoardDTO"> -->
+	<select id="selectJisuinfo"  parameterType="com.javatong.fcsttong.domain.LifeFCDTO"  resultType="com.javatong.fcsttong.domain.LifeFCDTO">
+		SELECT 	 TRIM(C.A_FST_STAGE || ' ' || replace(C.A_SCND_STAGE, 'null','') || ' ' || replace(C.A_THIRD_STAGE, 'null',''))  area_nm,
+     			 A.LJ_NOTI_TIME  noti_time,
+     			 DECODE(A.LJ_CODE, 'A07', '자외선' , 'A01_2', '식중독' , 'NoFormatted Data')  jisu_nm,
+      			 A.LJ_TODAY today_fcst, PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY) today_fcstStage,
+      			 A.LJ_TOMORROW tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TOMORROW) tomrw_fcstStage,
+      			 A.LJ_TODAY_AFT_TOMRW aft_tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY_AFT_TOMRW)  aft_tomrw_fcstStage,
+      			 C.A_AREANO area_no
+		FROM LIFEJISUINFO A,  AREA C 
+		WHERE A.A_AREANO = #{area_no} 
+		AND A.LJ_CODE = #{code}
+		AND A.LJ_NOTI_TIME =  func_sel_last_notitime('LIFE','LIFE1') 
+		AND A.A_AREANO = C.A_AREANO
+	</select>		
+<!--   가장 최신 지수별 전체지점 자료 조회 (관리자모드) -->
+   <select id="selectlAllPartsJisuInfo"  resultType="com.javatong.fcsttong.domain.LifeFCDTO">
+   <![CDATA[
+		SELECT * from (SELECT ROWNUM RNUM, TRIM(C.A_FST_STAGE || ' ' || replace(C.A_SCND_STAGE, 'null','') || ' ' || replace(C.A_THIRD_STAGE, 'null',''))  area_nm,
+     			 A.LJ_NOTI_TIME  noti_time,A.LJ_CODE code,
+     			 DECODE(A.LJ_CODE, 'A07', '자외선' , 'A01_2', '식중독' , 'NoFormattedData')  jisu_nm,
+      			 A.LJ_TODAY today_fcst, PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY) today_fcstStage,
+      			 A.LJ_TOMORROW tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TOMORROW) tomrw_fcstStage,
+      			 A.LJ_TODAY_AFT_TOMRW aft_tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY_AFT_TOMRW)  aft_tomrw_fcstStage,
+      			 C.A_AREANO area_no
+		FROM LIFEJISUINFO A,  AREA C 
+		WHERE A.LJ_CODE = #{code}
+		AND A.LJ_NOTI_TIME =  func_sel_last_notitime('LIFE','LIFE1') 
+		AND A.A_AREANO = C.A_AREANO
+		) WHERE RNUM>=1 AND RNUM<=50
+	]]>
+	</select>		
+
+<!--   지점값보기 조회 : (전체 지점)의 당일의 자외선 또는 식중독지수 정보를 조회함.   -->
+   <select id="allJijumJisuSelect"  resultType="com.javatong.fcsttong.domain.LifeFCDTO">
+   <![CDATA[
+		SELECT AREA_NM, SEL_GROUP_NM, LJ_NOTI_TIME, jisu_nm, today_fcst, today_fcstStage
+		FROM (SELECT CASE WHEN REPLACE(c.a_fst_stage, NULL, '') = '서울특별시'  THEN 1
+		            WHEN REPLACE(c.a_fst_stage, NULL, '') = '광주광역시' THEN 2
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '부산광역시' THEN 3
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '대구광역시' THEN 4
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '대전광역시' THEN 5
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '인천광역시' THEN 6
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '울산광역시' THEN 7
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '세종특별자치시' THEN 8
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '제주특별자치도' THEN 9 
+     			    WHEN REPLACE(c.a_fst_stage, NULL, '') = '경기도' THEN 10
+     			    ELSE 11 END NO,
+     			CASE WHEN REPLACE(c.a_fst_stage, NULL, '') = '서울특별시'  THEN '서울시'
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '광주광역시' THEN '광주시'   
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '부산광역시' THEN '부산시'
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '대구광역시' THEN '대구시'
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '대전광역시' THEN '대전시'
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '인천광역시' THEN '인천시'
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '울산광역시' THEN '울산시'
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '세종특별자치시' THEN '세종시'
+     			     WHEN REPLACE(c.a_fst_stage, NULL, '') = '제주특별자치도' THEN '제주도'
+     			     ELSE REPLACE(c.a_fst_stage, NULL, '') END AREA_NM,  
+     			 '1시단위' SEL_GROUP_NM,
+     			 A.LJ_NOTI_TIME ,
+                 DECODE(A.LJ_CODE, 'A07', '자외선' , 'A01_2', '식중독' , 'NoFormattedData')  jisu_nm,     			 
+     			 A.LJ_TODAY today_fcst,
+     			 PROC_SEL_JISU_STATUS_NM(A.lj_code, A.lj_today) today_fcstStage
+		FROM LIFEJISUINFO A,  AREA C
+		WHERE A.A_AREANO  LIKE '%00000000' 
+		AND A.LJ_CODE = #{code}
+		AND A.LJ_NOTI_TIME =  FUNC_SEL_LAST_NOTITIME('LIFE','LIFE1') 
+		AND A.A_AREANO = C.A_AREANO )
+		ORDER BY NO, SEL_GROUP_NM 		
+	]]>
+	</select>
+   <select id="lifeFCDataCheck"  resultType="String">
+   <![CDATA[
+		SELECT 'OK'
+        FROM LIFEJISUINFO 
+		WHERE LJ_ID = '1100000000'||#{code}||FUNC_SEL_LAST_NOTITIME('LIFE','LIFE1')
+	]]>
+	</select>	
+	<select id="lifeFcUpdSelect"  parameterType="com.javatong.fcsttong.domain.LifeFCDTO"  resultType="com.javatong.fcsttong.domain.LifeFCDTO">
+		SELECT 	 TRIM(C.A_FST_STAGE || ' ' || replace(C.A_SCND_STAGE, 'null','') || ' ' || replace(C.A_THIRD_STAGE, 'null',''))  area_nm,
+     			 A.LJ_NOTI_TIME  noti_time,A.LJ_CODE code,
+     			 DECODE(A.LJ_CODE, 'A07', '자외선' , 'A01_2', '식중독' , 'NoFormatted Data')  jisu_nm,
+      			 A.LJ_TODAY today_fcst, PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY) today_fcstStage,
+      			 A.LJ_TOMORROW tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TOMORROW) tomrw_fcstStage,
+      			 A.LJ_TODAY_AFT_TOMRW aft_tomrw_fcst,PROC_SEL_JISU_STATUS_NM(A.LJ_CODE, A.LJ_TODAY_AFT_TOMRW)  aft_tomrw_fcstStage,
+      			 C.A_AREANO area_no
+		FROM LIFEJISUINFO A,  AREA C 
+		WHERE A.A_AREANO = #{area_no} 
+		AND A.LJ_CODE = #{code}
+		AND A.LJ_NOTI_TIME =  #{noti_time}
+		AND A.A_AREANO = C.A_AREANO
+	</select>		
+	<insert id="insertJisuinfo" parameterType="com.javatong.fcsttong.domain.LifeFCDTO">
+		INSERT INTO LIFEJISUINFO (LJ_ID, LJ_CODE, A_AREANO, LJ_NOTI_TIME, LJ_TODAY, LJ_TOMORROW, LJ_TODAY_AFT_TOMRW, LJ_CREATE_DATE ) 
+			  VALUES (#{id},#{code},#{area_no},#{noti_time},#{today_fcst},#{tomrw_fcst},#{aft_tomrw_fcst},sysdate)
+	</insert>
+	
+	<update id="updateLifeFCJisuInfo" parameterType="com.javatong.fcsttong.domain.LifeFCDTO">
+		UPDATE LIFEJISUINFO
+	       SET LJ_TODAY = #{today_fcst} ,
+			   LJ_TOMORROW = #{tomrw_fcst} ,
+			   LJ_TODAY_AFT_TOMRW = #{aft_tomrw_fcst}
+		WHERE LJ_CODE = #{code}
+		AND A_AREANO = #{area_no}
+		AND LJ_NOTI_TIME = #{noti_time}  
+	</update>
+	<delete id="deleteLifeFCJisuInfo"  >
+		DELETE FROM LIFEJISUINFO
+		WHERE LJ_CODE = #{code}
+		AND A_AREANO = #{area_no}
+		AND LJ_NOTI_TIME = #{noti_time}   
+	</delete>	
+	
+<!-- 	<select id="usercount" resultType="int"> -->
+<!-- 		select count(U_EMAIL) from USERS -->
+<!-- 	</select> -->
+	
+<!-- 	<insert id="setcount" parameterType="com.javatong.fcsttong.domain.CountDTO"> -->
+<!-- 		insert into VISIT (V_DATE) VALUES (#{V_DATE}) -->
+<!-- 	</insert> -->
+</mapper>

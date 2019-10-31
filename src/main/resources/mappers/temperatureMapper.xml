@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.javatong.fcsttong.mapper.temperatureMapper">
+	<insert id="add" parameterType="com.javatong.fcsttong.domain.TemperatureDTO">
+		insert into middletemperature
+		(m_t_id, m_t_time, m_t_tamin3, m_t_tamax3, m_t_tamin4, m_t_tamax4,
+		m_t_tamin5, m_t_tamax5, m_t_tamin6, m_t_tamax6, m_t_tamin7,
+		m_t_tamax7, m_t_tamin8, m_t_tamax8, m_t_tamin9, m_t_tamax9,
+		m_t_tamin10, m_t_tamax10, a_areano)
+		values(#{m_t_id}, #{m_t_time},
+		#{m_t_tamin3}, #{m_t_tamax3}, #{m_t_tamin4}, #{m_t_tamax4},
+		#{m_t_tamin5}, #{m_t_tamax5}, #{m_t_tamin6}, #{m_t_tamax6},
+		#{m_t_tamin7}, #{m_t_tamax7}, #{m_t_tamin8}, #{m_t_tamax8},
+		#{m_t_tamin9}, #{m_t_tamax9}, #{m_t_tamin10}, #{m_t_tamax10},
+		#{a_areano})
+	</insert>
+
+	<select id="read" resultType="com.javatong.fcsttong.domain.TemperatureDTO">
+		select m_t_id, m_t_time,
+		m_t_tamin3, m_t_tamax3, m_t_tamin4, m_t_tamax4, m_t_tamin5,
+		m_t_tamax5, m_t_tamin6, m_t_tamax6, m_t_tamin7, m_t_tamax7,
+		m_t_tamin8, m_t_tamax8, m_t_tamin9, m_t_tamax9, m_t_tamin10,
+		m_t_tamax10, a_areano from middletemperature
+		where m_t_id = #{m_t_id}
+	</select>
+</mapper>
